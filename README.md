@@ -1,4 +1,4 @@
-# [Команда за $20: Dota 2](https://USERNAME.github.io/dota-20dollars-team/)
+# [Команда за $20: Dota 2](https://rabbau.github.io/dota-20dollars-team/)
 
 Аукцион киберспортсменов Dota 2 для двух игроков на одном устройстве. Некоммерческий фан-проект для игры с друзьями; не связан с Valve и Liquipedia.
 
