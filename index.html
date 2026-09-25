@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Команда за $20: Dota 2</title>
+<meta name="description" content="Аукцион киберспортсменов Dota 2 для двух игроков на одном устройстве.">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<script>
+  (function () {
+    var t = null;
+    try { t = localStorage.getItem('t20d.theme'); } catch (e) {}
+    if (t !== 'light' && t !== 'dark') {
+      t = window.matchMedia && matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
+    }
+    document.documentElement.setAttribute('data-theme', t);
+  })();
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;500;600;700&family=Cinzel:wght@600;700;800&display=swap">
+<link rel="stylesheet" href="style.css?v=9">
+</head>
+<body>
+<header class="topbar">
+  <a class="brand" href="#" id="brand"><span class="brand-mark" aria-hidden="true"><i>$20</i></span><span class="brand-text">Команда за $20</span></a>
+  <div class="topbar-actions">
+    <button class="icon-btn" id="themeBtn" type="button" aria-label="Сменить тему" title="Сменить тему">
+      <svg class="i-sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4.5"/><path d="M12 1.5v3M12 19.5v3M1.5 12h3M19.5 12h3M4.6 4.6l2.1 2.1M17.3 17.3l2.1 2.1M4.6 19.4l2.1-2.1M17.3 6.7l2.1-2.1"/></svg>
+      <svg class="i-moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5z"/></svg>
+    </button>
+    <button class="btn btn-ghost" id="exitBtn" type="button" hidden>Выйти в меню</button>
+  </div>
+</header>
+
+<main id="app">
+  <!-- Меню -->
+  <section class="screen" id="menu" hidden>
+    <div class="menu-hero">
+      <p class="eyebrow">Аукцион киберспортсменов · 2 игрока · 1 устройство</p>
+      <h1 class="title">Команда за $20<span class="sub">Dota 2</span></h1>
+      <p class="lead">Торгуйтесь за про-игроков, соберите состав и победите суммарным рейтингом.</p>
+    </div>
+
+    <div class="menu-grid">
+      <div class="menu-block wide">
+        <h2 class="block-title">Игроки</h2>
+        <div class="choice-grid three" id="poolList"></div>
+      </div>
+      <div class="menu-block">
+        <h2 class="block-title">Формат</h2>
+        <div class="choice-list" id="formatList"></div>
+      </div>
+      <div class="menu-block">
+        <h2 class="block-title">Рейтинг игроков</h2>
+        <div class="choice-grid" id="modeList"></div>
+        <p class="hint" id="modeHint"></p>
+      </div>
+    </div>
+
+    <div class="menu-play">
+      <button class="btn btn-primary btn-play" id="playBtn" type="button">Играть</button>
+    </div>
+
+    <details class="rules">
+      <summary>Правила</summary>
+      <ul>
+        <li>Из базы тайно собирается пул ровно на два состава. Видно только текущий лот.</li>
+        <li>Торги открывают по очереди (первый лот — жребий). Открывающий ставит от $1 или жмёт «Скип».</li>
+        <li>Соперник пасует — игрок уходит тому, кто поставил, — или поднимает ставку. И так до паса.</li>
+        <li>«Скип» до первой ставки: соперник забирает игрока за $1 или тоже скипает. Двойной скип убирает игрока из пула, а вместо него в случайное место среди оставшихся лотов тайно добавляется другой игрок той же позиции.</li>
+        <li>На каждое свободное место нужно оставить хотя бы $1: макс. ставка = деньги − (свободных мест − 1).</li>
+        <li>Если у одного позиция уже закрыта, лот уходит второму за $1.</li>
+        <li>Побеждает больший суммарный рейтинг; при равенстве — у кого больше денег осталось.</li>
+      </ul>
+    </details>
+    <p class="db-note" id="dbNote"></p>
+  </section>
+
+  <!-- Торги -->
+  <section class="screen" id="game" hidden>
+    <div class="arena">
+      <div class="stage">
+        <div class="lot-head">
+          <span class="lot-no" id="lotNo"></span>
+          <span class="lot-fmt" id="lotFmt"></span>
+        </div>
+        <div class="card-wrap" id="cardWrap"></div>
+        <div class="console">
+          <p class="status" id="status"></p>
+          <p class="bidlog" id="bidlog"></p>
+          <div class="controls" id="controls"></div>
+        </div>
+      </div>
+      <aside class="panel radiant" id="panel0"></aside>
+      <aside class="panel dire" id="panel1"></aside>
+    </div>
+  </section>
+
+  <!-- Финал -->
+  <section class="screen" id="final" hidden>
+    <div class="final-head">
+      <p class="eyebrow">Пул разыгран</p>
+      <h1 class="title final-title" id="winner"></h1>
+      <p class="lead" id="winnerNote"></p>
+    </div>
+    <div class="final-grid" id="finalGrid"></div>
+    <div class="menu-play final-actions">
+      <button class="btn btn-primary" id="againBtn" type="button">Ещё раз</button>
+      <button class="btn btn-ghost" id="menuBtn" type="button">В меню</button>
+    </div>
+  </section>
+
+  <p class="loading" id="loading">Загрузка базы игроков…</p>
+</main>
+
+<div class="modal" id="exitModal" hidden>
+  <div class="modal-box" role="dialog" aria-modal="true" aria-labelledby="exitTitle">
+    <h2 id="exitTitle">Выйти в меню?</h2>
+    <p>Текущая партия будет потеряна.</p>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" id="stayBtn" type="button">Остаться</button>
+      <button class="btn btn-primary" id="leaveBtn" type="button">Выйти</button>
+    </div>
+  </div>
+</div>
+
+<script src="app.js?v=9"></script>
+</body>
+</html>
